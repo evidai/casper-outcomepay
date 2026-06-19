@@ -5,51 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>OutcomePay — agents pay only for verified work, on Casper</title>
 <style>
-  :root{ --bg:#08090c; --ink:#f4f5f7; --dim:#9aa0ad; --line:#1c1f27; --accent:#8b7bff; }
+  :root{ --bg:#08090c; --ink:#f4f5f7; --dim:#9aa0ad; --line:#1c1f27; --accent:#8b7bff;
+         --green:#46d6a0; --amber:#ffc357; }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);
     font:16px/1.6 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:inherit}
-  .wrap{max-width:720px;margin:0 auto;padding:0 24px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px}
 
-  /* hero — one message */
-  .hero{min-height:78vh;display:flex;flex-direction:column;justify-content:center}
-  .kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:28px}
-  h1{font-size:52px;line-height:1.05;letter-spacing:-.03em;margin:0;font-weight:700}
+  .hero{min-height:62vh;display:flex;flex-direction:column;justify-content:center;padding-top:60px}
+  .kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:24px}
+  h1{font-size:50px;line-height:1.05;letter-spacing:-.03em;margin:0;font-weight:700}
   h1 .a{color:var(--accent)}
-  .sub{font-size:19px;color:var(--dim);margin:24px 0 0;max-width:540px}
-  .cta{margin-top:40px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-  .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:15px;border-radius:10px;padding:13px 22px}
-  .btn.p{background:var(--accent);color:#0a0a12}
-  .btn.g{color:var(--ink);opacity:.7}
-  .btn.g:hover{opacity:1}
+  .sub{font-size:19px;color:var(--dim);margin:22px 0 0;max-width:540px}
 
-  section{padding:96px 0;border-top:1px solid var(--line)}
-  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 32px}
-  .lead{font-size:28px;line-height:1.25;letter-spacing:-.02em;margin:0;font-weight:600}
+  section{padding:64px 0;border-top:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 18px}
+  .lead{font-size:26px;line-height:1.25;letter-spacing:-.02em;margin:0 0 8px;font-weight:600}
   .lead .dim{color:var(--dim)}
 
-  /* steps — minimal */
-  .steps{margin-top:44px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .step{background:var(--bg);padding:26px 28px}
-  .step .n{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:8px}
-  .step h3{margin:0 0 6px;font-size:17px;font-weight:600}
-  .step p{margin:0;color:var(--dim);font-size:15px}
+  /* interactive demo player */
+  .player{margin-top:28px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#0b0d12}
+  .ctrl{display:flex;gap:10px;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .btn{border:0;cursor:pointer;font-weight:600;font-size:14px;border-radius:10px;padding:11px 18px;font-family:inherit}
+  .btn.p{background:var(--accent);color:#0a0a12}
+  .btn.p:disabled{opacity:.4;cursor:default}
+  .btn.g{background:transparent;color:var(--dim);border:1px solid var(--line)}
+  .scn{font-size:13px;color:var(--dim);margin-left:4px}
+  .stage{padding:8px 18px 20px}
+  .ev{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line);opacity:.32;transition:opacity .35s}
+  .ev:last-child{border-bottom:0}
+  .ev.on{opacity:1}
+  .dot{flex:0 0 26px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--dim)}
+  .ev.on .dot{border-color:var(--accent);color:var(--accent)}
+  .ev.ok .dot{border-color:var(--green);color:var(--green)}
+  .ev.bad .dot{border-color:var(--amber);color:var(--amber)}
+  .ebody h4{margin:0 0 3px;font-size:15px;font-weight:600}
+  .ebody p{margin:0;color:var(--dim);font-size:13.5px}
+  .ebody a{color:var(--accent);text-decoration:none;font-size:12.5px;font-weight:600}
+  .ebody a:hover{text-decoration:underline}
+  .meter{height:8px;border-radius:99px;background:#15171f;margin:14px 18px 2px;overflow:hidden}
+  .meter > i{display:block;height:100%;width:0;background:var(--accent);transition:width .5s}
+  .meterlbl{font-size:12px;color:var(--dim);padding:0 18px 16px}
+  .meterlbl b{color:var(--ink)}
 
-  /* proof — just the facts */
-  .proof{margin-top:40px;display:grid;gap:14px}
-  .row{display:flex;justify-content:space-between;align-items:center;gap:16px;
-    border:1px solid var(--line);border-radius:12px;padding:20px 22px}
-  .row .what{font-size:16px;font-weight:600}
-  .row .what small{display:block;color:var(--dim);font-weight:400;font-size:13px;margin-top:3px}
-  .row .links{display:flex;gap:18px;flex-shrink:0}
-  .row a{color:var(--accent);text-decoration:none;font-size:14px;font-weight:600;white-space:nowrap}
-  .row a:hover{text-decoration:underline}
-  .verdict{font-size:13px;color:var(--dim);margin-top:24px}
-  .verdict b{color:var(--ink)}
+  .grid3{margin-top:8px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .cell{background:var(--bg);padding:22px 24px}
+  .cell .n{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:6px}
+  .cell h3{margin:0 0 5px;font-size:16px}.cell p{margin:0;color:var(--dim);font-size:14px}
 
-  footer{padding:72px 0 96px;border-top:1px solid var(--line);color:var(--dim);font-size:14px}
-  @media(max-width:560px){ h1{font-size:38px} .lead{font-size:22px} .row{flex-direction:column;align-items:flex-start} }
+  footer{padding:56px 0 80px;border-top:1px solid var(--line);color:var(--dim);font-size:14px}
+  footer a{color:var(--accent);text-decoration:none}
+  @media(max-width:560px){h1{font-size:36px}.lead{font-size:21px}}
 </style>
 </head>
 <body>
@@ -59,50 +66,82 @@
     <div class="kicker">Casper Agentic Buildathon 2026</div>
     <h1>Agents pay only for<br><span class="a">verified work.</span></h1>
     <p class="sub">An AI agent can't overspend, and won't pay for work that didn't happen.
-      The budget cap and the payout condition live on-chain — on Casper.</p>
-    <div class="cta">
-      <a class="btn p" href="https://testnet.cspr.live/transaction/231299f4e7616f0eafb7795e3b28c983562889129a4420ecf86b89b120509a1f">See a real payout on-chain</a>
-      <a class="btn g" href="https://github.com/evidai/casper-outcomepay">GitHub →</a>
-    </div>
+      The budget cap and the payout condition live on-chain — on Casper. Run it below 👇</p>
   </div>
 
   <section>
-    <p class="eyebrow">How it works</p>
-    <p class="lead">Lock the money in escrow. <span class="dim">Verify the outcome. Release it only if the work is real.</span></p>
-    <div class="steps">
-      <div class="step"><div class="n">01 — Lock</div><h3>Escrow, capped on-chain</h3><p>The agent locks funds. The contract refuses anything over its budget cap. Overspending is impossible.</p></div>
-      <div class="step"><div class="n">02 — Verify</div><h3>A machine decides</h3><p>The outcome is a fact, not an opinion — here: the CVEs are gone and the tests pass.</p></div>
-      <div class="step"><div class="n">03 — Settle or refund</div><h3>The chain pays out</h3><p>Verified → the provider gets paid. Failed → the money goes back. Not the agent's call.</p></div>
+    <p class="eyebrow">Interactive demo · replays real on-chain transactions</p>
+    <p class="lead">Press play. <span class="dim">Watch escrow lock, verification decide, and the chain settle or refund.</span></p>
+
+    <div class="player">
+      <div class="ctrl">
+        <button class="btn p" id="run">▶ Run the demo</button>
+        <button class="btn g" id="reset">Reset</button>
+        <span class="scn" id="scn">Two jobs: one verifies → settle, one fails → refund. Plus an on-chain cap that blocks overspend.</span>
+      </div>
+      <div class="meter"><i id="bar"></i></div>
+      <div class="meterlbl">On-chain budget cap: <b id="caplbl">0.00 / 0.15 CSPR</b> locked — the agent physically cannot exceed it.</div>
+      <div class="stage" id="stage"></div>
     </div>
   </section>
 
   <section>
-    <p class="eyebrow">Live on Casper testnet</p>
-    <p class="lead">Two real jobs. <span class="dim">One paid out. One refunded. All on-chain.</span></p>
-    <div class="proof">
-      <div class="row">
-        <div class="what">Verified → paid the provider<small>service-A · 2 high/critical CVEs cleared</small></div>
-        <div class="links">
-          <a href="https://testnet.cspr.live/transaction/3a6113b343953bde8f9be862c8fbbd1c97d2b343f5caca6b6de8f67a6845e850">lock</a>
-          <a href="https://testnet.cspr.live/transaction/231299f4e7616f0eafb7795e3b28c983562889129a4420ecf86b89b120509a1f">settle</a>
-        </div>
-      </div>
-      <div class="row">
-        <div class="what">Failed → refunded the payer<small>service-B · couldn't be fixed safely</small></div>
-        <div class="links">
-          <a href="https://testnet.cspr.live/transaction/08967c40136481886c25bca485af907f379ec90379370bdb98eb4839ea9425e8">lock</a>
-          <a href="https://testnet.cspr.live/transaction/351bad164e78d88544e300997ba41749ce5433a6bfc255424712a29785efb6e2">refund</a>
-        </div>
-      </div>
+    <p class="eyebrow">How it works</p>
+    <div class="grid3">
+      <div class="cell"><div class="n">01 — Lock</div><h3>Escrow, capped on-chain</h3><p>Funds are locked. The contract reverts anything over the cap. Overspending is impossible.</p></div>
+      <div class="cell"><div class="n">02 — Verify</div><h3>A machine decides</h3><p>The outcome is a fact: CVEs gone and tests pass. Not the agent's opinion.</p></div>
+      <div class="cell"><div class="n">03 — Settle / refund</div><h3>The chain pays out</h3><p>Verified → provider paid. Failed → money returned. Enforced by consensus.</p></div>
     </div>
-    <p class="verdict">Contract deployed on Casper testnet · <b>da6a192c…ccff1</b> · <a style="color:var(--accent)" href="https://testnet.cspr.live/transaction/ca88a1b188e636fcd3aa0d100fcefc91f060fb500b54c44ae6d47784ae4aa250">install tx ↗</a></p>
   </section>
 
   <footer class="wrap">
-    The safety layer every paying agent needs.<br>
-    Built for the Casper Agentic Buildathon 2026 · <a style="color:var(--accent)" href="https://github.com/evidai/casper-outcomepay">github.com/evidai/casper-outcomepay</a>
+    Every step above links to a real Casper testnet transaction. The safety layer every paying agent needs.<br>
+    Built for the Casper Agentic Buildathon 2026 · <a href="https://github.com/evidai/casper-outcomepay">github.com/evidai/casper-outcomepay</a>
   </footer>
-
 </div>
+
+<script>
+const TX = "https://testnet.cspr.live/transaction/";
+// real, immutable on-chain transactions from the live runs
+const STEPS = [
+  {t:"Job A — agent locks escrow", d:"0.1 CSPR locked on Casper (under the cap).", tx:"3a6113b343953bde8f9be862c8fbbd1c97d2b343f5caca6b6de8f67a6845e850", lab:"lock tx", lock:0.1, kind:"on"},
+  {t:"Verify outcome", d:"Machine check: 2 high/critical CVEs cleared, tests green → PASS.", kind:"ok", icon:"✓"},
+  {t:"Settle → provider paid", d:"Escrow released to a separate provider account (balance 0 → 0.1 CSPR).", tx:"dd93702ca7c77eb2ca58e46b74eb29170ab0b44d4c6c424bf228408b66762c3a", lab:"settle tx", lock:0, kind:"ok", icon:"✓"},
+  {t:"Job B — agent locks escrow", d:"0.1 CSPR locked for the next job.", tx:"08967c40136481886c25bca485af907f379ec90379370bdb98eb4839ea9425e8", lab:"lock tx", lock:0.1, kind:"on"},
+  {t:"Verify outcome", d:"Machine check: cannot be fixed safely → FAIL.", kind:"bad", icon:"!"},
+  {t:"Refund → payer repaid", d:"Green-or-no-fee: the chain returns the escrow automatically.", tx:"351bad164e78d88544e300997ba41749ce5433a6bfc255424712a29785efb6e2", lab:"refund tx", lock:0, kind:"bad", icon:"↩"},
+  {t:"Overspend attempt → blocked", d:"A lock that would exceed the cap reverts on-chain with CapExceeded (User error 1).", tx:"afd876ae42c74e7ae0810b8fd3d127d8c844ce165b48cdd65fcc92a71b576d05", lab:"reverted tx", lock:0, kind:"bad", icon:"⛔"},
+];
+const stage=document.getElementById('stage'), bar=document.getElementById('bar'),
+      caplbl=document.getElementById('caplbl'), runBtn=document.getElementById('run'), resetBtn=document.getElementById('reset');
+const CAP=0.15;
+function render(){
+  stage.innerHTML = STEPS.map((s,i)=>`
+    <div class="ev" id="ev${i}">
+      <div class="dot">${i+1}</div>
+      <div class="ebody">
+        <h4>${s.t}</h4><p>${s.d}</p>
+        ${s.tx?`<a href="${TX}${s.tx}" target="_blank" rel="noopener">${s.lab} ↗</a>`:''}
+      </div>
+    </div>`).join('');
+}
+render();
+let timer=null;
+function setCap(v){ bar.style.width=Math.min(100,(v/CAP)*100)+'%'; caplbl.textContent=v.toFixed(2)+' / '+CAP.toFixed(2)+' CSPR'; }
+function play(){
+  runBtn.disabled=true; reset(false); let locked=0, i=0;
+  timer=setInterval(()=>{
+    if(i>=STEPS.length){clearInterval(timer); runBtn.disabled=false; return;}
+    const s=STEPS[i], el=document.getElementById('ev'+i);
+    el.classList.add('on'); if(s.kind==='ok')el.classList.add('ok'); if(s.kind==='bad')el.classList.add('bad');
+    if(s.icon) el.querySelector('.dot').textContent=s.icon;
+    if(typeof s.lock==='number'){ locked = s.t.includes('Overspend')? locked : s.lock; if(s.t.includes('Overspend')){/* cap stays */} else locked=s.lock; setCap(s.lock); }
+    i++;
+  },1100);
+}
+function reset(clear=true){ if(timer)clearInterval(timer); setCap(0);
+  document.querySelectorAll('.ev').forEach((e,i)=>{e.className='ev'; e.querySelector('.dot').textContent=i+1;}); if(clear)runBtn.disabled=false; }
+runBtn.onclick=play; resetBtn.onclick=()=>reset(true); setCap(0);
+</script>
 </body>
 </html>
