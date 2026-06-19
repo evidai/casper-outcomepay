@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OutcomePay — outcome-settled agent payments on Casper</title>
+<style>
+  :root{
+    --bg:#0c0e14; --panel:#141823; --line:#232838; --ink:#e8ecf5; --dim:#8b93a7;
+    --red:#ff3b4e; --green:#36d399; --amber:#ffb020; --accent:#7c5cff;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+  a{color:inherit}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 64px}
+  .badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+  h1{font-size:34px;line-height:1.12;margin:18px 0 8px;letter-spacing:-.02em}
+  .lead{color:var(--dim);font-size:16px;max-width:680px}
+  .pill{display:inline-flex;gap:7px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12.5px;color:var(--dim);margin:14px 8px 0 0}
+  .grid{display:grid;gap:14px}
+  @media(min-width:760px){.cols-3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:14px}
+  .card p{margin:0;color:var(--dim);font-size:13px}
+  .step-n{display:inline-flex;width:26px;height:26px;border-radius:8px;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:#1d2231;color:var(--accent);margin-bottom:8px}
+  section{margin-top:40px}
+  .sec-h{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+  .tag{font-size:11px;font-weight:800;border-radius:6px;padding:3px 8px}
+  .tag.s{background:rgba(54,211,153,.12);color:var(--green)}
+  .tag.r{background:rgba(255,176,32,.12);color:var(--amber)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--dim)}
+  .tx{color:var(--accent);text-decoration:none}.tx:hover{text-decoration:underline}
+  .cap{margin-top:10px;height:10px;border-radius:999px;background:#1d2231;overflow:hidden}
+  .cap > i{display:block;height:100%;width:20%;background:linear-gradient(90deg,var(--accent),#a78bfa)}
+  .foot{margin-top:48px;border-top:1px solid var(--line);padding-top:18px;color:var(--dim);font-size:13px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;font-size:13.5px;border-radius:10px;padding:10px 16px;margin:16px 10px 0 0}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--dim)}
+  .flow b{color:var(--ink)} .arr{color:var(--accent);font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">Casper Agentic Buildathon 2026 · Agentic AI × DeFi × RWA</span>
+  <h1>OutcomePay</h1>
+  <p class="lead">Autonomous agents pay for real-world work on Casper — but the money is
+  <b style="color:var(--ink)">escrowed and released only when the outcome is machine-verified</b>,
+  under a hard on-chain budget cap the agent can't exceed. Every settlement is a verifiable on-chain receipt.</p>
+
+  <div>
+    <span class="pill">🟢 Live on Casper Testnet</span>
+    <span class="pill">🔒 On-chain budget cap</span>
+    <span class="pill">✅ Settle on verified outcome</span>
+    <span class="pill">↩︎ Refund on failure — green-or-no-fee</span>
+    <span class="pill">🤖 MCP-native · x402</span>
+  </div>
+
+  <section>
+    <div class="sec-h">How it works</div>
+    <div class="grid cols-3">
+      <div class="card"><span class="step-n">1</span><h3>Lock</h3><p>The agent escrows CSPR for a job. The contract refuses if it would exceed the agent's on-chain cap — overspend is impossible.</p></div>
+      <div class="card"><span class="step-n">2</span><h3>Verify</h3><p>A machine check decides the outcome — here: dependency CVEs cleared <b style="color:var(--ink)">and</b> tests green. Binary, not subjective.</p></div>
+      <div class="card"><span class="step-n">3</span><h3>Settle / Refund</h3><p>Pass → funds released to the provider with a receipt. Fail → refunded to the payer. The chain decides, not the agent.</p></div>
+    </div>
+    <div class="flow"><b>agent</b><span class="arr">→</span> lock (cap-checked) <span class="arr">→</span> verify <span class="arr">→</span> <b>settle</b> or <b>refund</b> <span class="arr">→</span> on-chain receipt</div>
+  </section>
+
+  <section>
+    <div class="sec-h">Live demo — real on-chain runs</div>
+    <table>
+      <thead><tr><th>Job</th><th>Outcome</th><th>Lock</th><th>Settlement</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>service-A<br><span class="mono">2 high/critical CVEs</span></td>
+          <td><span class="tag s">VERIFIED → SETTLE</span></td>
+          <td><a class="tx" href="https://testnet.cspr.live/transaction/3a6113b343953bde8f9be862c8fbbd1c97d2b343f5caca6b6de8f67a6845e850">lock ↗</a></td>
+          <td><a class="tx" href="https://testnet.cspr.live/transaction/231299f4e7616f0eafb7795e3b28c983562889129a4420ecf86b89b120509a1f">settle ↗</a></td>
+        </tr>
+        <tr>
+          <td>service-B<br><span class="mono">unfixable in semver</span></td>
+          <td><span class="tag r">FAILED → REFUND</span></td>
+          <td><a class="tx" href="https://testnet.cspr.live/transaction/08967c40136481886c25bca485af907f379ec90379370bdb98eb4839ea9425e8">lock ↗</a></td>
+          <td><a class="tx" href="https://testnet.cspr.live/transaction/351bad164e78d88544e300997ba41749ce5433a6bfc255424712a29785efb6e2">refund ↗</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mono" style="margin-top:12px">On-chain budget cap (agent cannot exceed)</div>
+    <div class="cap"><i></i></div>
+    <div class="mono" style="margin-top:6px">0.2 / 1.0 CSPR locked across jobs — the rest is unspendable by the agent.</div>
+  </section>
+
+  <section>
+    <div class="sec-h">Contract</div>
+    <div class="card">
+      <p>Package hash <span class="mono">da6a192c115d4696363e04e87b6ae4ee08c3269e4571fe7cf998befe09eccff1</span></p>
+      <p style="margin-top:6px">Deployed on Casper Testnet · <a class="tx" href="https://testnet.cspr.live/transaction/ca88a1b188e636fcd3aa0d100fcefc91f060fb500b54c44ae6d47784ae4aa250">install transaction ↗</a></p>
+    </div>
+    <a class="btn" href="https://github.com/evidai/casper-outcomepay">View on GitHub</a>
+    <a class="btn ghost" href="https://testnet.cspr.live/transaction/ca88a1b188e636fcd3aa0d100fcefc91f060fb500b54c44ae6d47784ae4aa250">See it on-chain</a>
+  </section>
+
+  <div class="foot">
+    OutcomePay — the safety primitive every paying agent needs: it can't overspend, and it won't pay for work that didn't happen.
+    Built for the Casper Agentic Buildathon 2026. Backed by LemonCake, a live x402 agent-payment rail.
+  </div>
+</div>
+</body>
+</html>
