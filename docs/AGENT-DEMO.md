@@ -12,12 +12,16 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` and add:
 {
   "mcpServers": {
     "outcomepay": {
-      "command": "node",
+      "command": "/Users/workoutsomehow/.nvm/versions/node/v18.20.4/bin/node",
       "args": ["/Users/workoutsomehow/adhunt-pro/casper-outcomepay/mcp/server.mjs"]
     }
   }
 }
 ```
+
+> Use the **absolute** node path above (Claude Desktop launches with a minimal
+> PATH and a bare `"node"` often isn't found). Verified working: the tools read
+> live on-chain state and run the real verifier when spawned from any directory.
 
 Restart Claude Desktop. You should see the `outcomepay_*` tools available.
 
