@@ -5,6 +5,8 @@ Casper smart contract and released only when the outcome is machine-verified, un
 a hard on-chain budget cap the agent physically cannot exceed. Every settlement
 emits a verifiable on-chain receipt.**
 
+**Live demo:** https://evidai.github.io/casper-outcomepay/  ·  **Repo:** https://github.com/evidai/casper-outcomepay
+
 > Casper Agentic Buildathon 2026 — Qualification Round. Theme: Agentic AI × DeFi × RWA.
 
 ## The problem

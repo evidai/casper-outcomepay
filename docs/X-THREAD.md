@@ -46,6 +46,7 @@ Nobody conditions *release* on a *verified outcome*. Escrow + verify + settle/re
 **6/**
 Code, contract hash, and every on-chain tx:
 https://github.com/evidai/casper-outcomepay
+Live: https://evidai.github.io/casper-outcomepay/
 
 The safety layer every paying agent needs: can't overspend, won't pay for nothing.
 
