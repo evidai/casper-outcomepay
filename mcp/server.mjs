@@ -45,6 +45,8 @@ function cli(args) {
 function verify(repo) {
   const report = join(repo, "gctask-report.json");
   if (existsSync(report)) rmSync(report);
+  const seed = join(repo, "package-lock.seed.json");
+  if (existsSync(seed)) execFileSync("cp", [seed, join(repo, "package-lock.json")]);
   try { execFileSync("node", [VERIFIER, repo, "--apply"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }); } catch {}
   if (!existsSync(report)) return { pass: false, detail: "no report" };
   const j = JSON.parse(readFileSync(report, "utf8"));

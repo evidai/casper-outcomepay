@@ -50,6 +50,10 @@ function txHash(out) {
 function verify(repo) {
   const report = join(repo, "gctask-report.json");
   if (existsSync(report)) rmSync(report);
+  // Repeatability: if a pristine vulnerable seed lockfile exists, restore it so
+  // every run starts from the genuinely-vulnerable baseline (and resolves it).
+  const seed = join(repo, "package-lock.seed.json");
+  if (existsSync(seed)) execFileSync("cp", [seed, join(repo, "package-lock.json")]);
   try {
     execFileSync("node", [join(HERE, "verifier", "gctask-auto.mjs"), repo, "--apply"], {
       encoding: "utf8", stdio: ["ignore", "pipe", "pipe"],
