@@ -40,3 +40,14 @@ decides the outcome, the chain settles (pass) or refunds (fail). All on-chain:
 |---|---|---|---|
 | 11 service-A | VERIFY **PASS** → settle | https://testnet.cspr.live/transaction/3a6113b343953bde8f9be862c8fbbd1c97d2b343f5caca6b6de8f67a6845e850 | https://testnet.cspr.live/transaction/231299f4e7616f0eafb7795e3b28c983562889129a4420ecf86b89b120509a1f |
 | 12 service-B | VERIFY **PARTIAL** → refund | https://testnet.cspr.live/transaction/08967c40136481886c25bca485af907f379ec90379370bdb98eb4839ea9425e8 | https://testnet.cspr.live/transaction/351bad164e78d88544e300997ba41749ce5433a6bfc255424712a29785efb6e2 |
+
+## Hardening proofs (2026-06-19) — the two things skeptics ask
+
+**A — the on-chain budget cap actually blocks overspend (live):**
+- set_cap 0.15 CSPR → https://testnet.cspr.live/transaction/3721127bf5fa4b7d5ce71d7b97a592de552e44dc91300420487923f0826ab9b1
+- lock 0.1 (under cap) ✅ → https://testnet.cspr.live/transaction/faf5e7da6b5b04690debea2b05492c0bc2e487931cca20b3b5f7364101496ce9
+- lock another 0.1 (total 0.2 > 0.15) **REVERTED with `User error: 1` (Error::CapExceeded)** → https://testnet.cspr.live/transaction/afd876ae42c74e7ae0810b8fd3d127d8c844ce165b48cdd65fcc92a71b576d05
+
+**B — settle pays a DISTINCT provider account (real value transfer):**
+- settle job 21 → https://testnet.cspr.live/transaction/dd93702ca7c77eb2ca58e46b74eb29170ab0b44d4c6c424bf228408b66762c3a
+- provider `account-hash-97112e26…` balance went from *Purse not found* (0) to **100,000,000 motes (0.1 CSPR)** — the escrow was released to a separate party, not the payer.
