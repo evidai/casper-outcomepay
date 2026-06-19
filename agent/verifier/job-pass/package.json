@@ -1,9 +1,8 @@
 {
-  "name": "demo-safe",
+  "name": "service-a",
   "version": "1.0.0",
-  "description": "Vulnerable deps specified with caret ranges, so they are fixable WITHIN semver (no --force). Proves the auto PASS path.",
   "private": true,
-  "type": "commonjs",
+  "description": "A real service whose dependency CVEs are fixable within semver.",
   "scripts": {
     "test": "node test/run.js"
   },

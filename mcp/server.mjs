@@ -63,6 +63,9 @@ const TOOLS = [
     inputSchema: { type: "object", required: ["job_id"], properties: { job_id: { type: "integer" } } } },
   { name: "outcomepay_status", description: "Read job status: 0 none, 1 locked, 2 settled, 3 refunded.",
     inputSchema: { type: "object", required: ["job_id"], properties: { job_id: { type: "integer" } } } },
+  { name: "outcomepay_verify",
+    description: "Run the machine verifier (gctask CVE check) on a repo WITHOUT touching the chain. Returns pass/fail so the agent can DECIDE whether to settle or refund.",
+    inputSchema: { type: "object", required: ["repo"], properties: { repo: { type: "string" } } } },
   { name: "outcomepay_commission_verified_fix",
     description: "End-to-end: lock escrow, run the machine verifier (gctask CVE check) on a repo, then settle if it passes or refund if it fails.",
     inputSchema: { type: "object", required: ["repo", "job_id", "amount_cspr"], properties: {
@@ -92,6 +95,10 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
     case "outcomepay_status": {
       const r = cli(["contract", "OutcomePay", "status_of", "--job_id", String(a.job_id)]);
       return text(r.raw);
+    }
+    case "outcomepay_verify": {
+      const v = verify(resolve(a.repo));
+      return text(`Verification: ${v.pass ? "PASS" : "FAIL"} — ${v.detail}. ${v.pass ? "Recommend SETTLE." : "Recommend REFUND (green-or-no-fee)."}`);
     }
     case "outcomepay_commission_verified_fix": {
       const lock = cli(["contract", "OutcomePay", "lock", "--job_id", String(a.job_id), "--provider", provider, "--attached_value", String(a.amount_cspr), "--gas", "30000000000"]);

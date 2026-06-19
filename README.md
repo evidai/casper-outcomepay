@@ -92,12 +92,18 @@ unverified work. The receipt is permanent and auditable.
 ## Run it
 
 ```bash
-# end-to-end: lock → verify (real CVE machine-check) → settle/refund, all on Casper testnet
+# end-to-end (scripted): lock → verify (real CVE machine-check) → settle/refund, all on Casper testnet
 node agent/orchestrator.mjs --base 21      # use a fresh, unused job-id base each run
 
 # agent-native via MCP (after: cd mcp && npm i)
 node mcp/server.mjs                         # exposes outcomepay_* tools to any MCP client
 ```
+
+**Real AI agent (the agentic centerpiece):** wire the MCP server into Claude
+Desktop and Claude itself commissions the work, reads the verification, and
+*decides* to settle or refund — see `docs/AGENT-DEMO.md`. The verifier resolves
+real high/critical CVEs (job-pass) → settle, and refuses unfixable ones
+(job-fail) → refund, so "pay only for verified work" is true on camera.
 
 ## Built on
 
