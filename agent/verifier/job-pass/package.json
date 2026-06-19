@@ -1,0 +1,14 @@
+{
+  "name": "demo-safe",
+  "version": "1.0.0",
+  "description": "Vulnerable deps specified with caret ranges, so they are fixable WITHIN semver (no --force). Proves the auto PASS path.",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "minimist": "^1.2.5"
+  }
+}

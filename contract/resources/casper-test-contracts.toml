@@ -1,0 +1,6 @@
+last_updated = "2026-06-19T04:42:35Z"
+
+[[contracts]]
+name = "OutcomePay"
+package_name = "OutcomePay"
+package_hash = "hash-da6a192c115d4696363e04e87b6ae4ee08c3269e4571fe7cf998befe09eccff1"

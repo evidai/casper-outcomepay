@@ -1,0 +1,8 @@
+.deploy-keys/
+contract/target/
+contract/wasm/
+node_modules/
+contract/.env
+*/verifier/*/gctask-report.json
+*/verifier/*/SECURITY-SCAN.md
+*/verifier/*/gctask-badge.json

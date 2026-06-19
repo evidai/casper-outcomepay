@@ -1,0 +1,12 @@
+{
+  "name": "outcomepay-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server exposing OutcomePay (outcome-settled agent escrow on Casper) as agent tools.",
+  "bin": { "outcomepay-mcp": "server.mjs" },
+  "scripts": { "start": "node server.mjs" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

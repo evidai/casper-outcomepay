@@ -1,0 +1,14 @@
+{
+  "name": "demo-target",
+  "version": "1.0.0",
+  "description": "A small app with known-vulnerable dependencies, used to prove the Guaranteed CVE Fix pipeline.",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "lodash": "4.17.11",
+    "minimist": "1.2.5"
+  }
+}
