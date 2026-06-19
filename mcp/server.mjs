@@ -27,6 +27,10 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+const PROJECT = resolve(HERE, "..");
+// Resolve a repo arg against the PROJECT root (not the server's cwd, which is
+// wherever the MCP client launched it). Absolute paths pass through unchanged.
+const repoPath = (r) => resolve(PROJECT, r);
 const CONTRACT_DIR = resolve(HERE, "..", "contract");
 const CLI = join(CONTRACT_DIR, "target", "debug", "outcomepay_cli");
 const VERIFIER = join(HERE, "..", "agent", "verifier", "gctask-auto.mjs");
@@ -99,13 +103,13 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       return text(r.raw);
     }
     case "outcomepay_verify": {
-      const v = verify(resolve(a.repo));
+      const v = verify(repoPath(a.repo));
       return text(`Verification: ${v.pass ? "PASS" : "FAIL"} — ${v.detail}. ${v.pass ? "Recommend SETTLE." : "Recommend REFUND (green-or-no-fee)."}`);
     }
     case "outcomepay_commission_verified_fix": {
       const lock = cli(["contract", "OutcomePay", "lock", "--job_id", String(a.job_id), "--provider", provider, "--attached_value", String(a.amount_cspr), "--gas", "30000000000"]);
       if (!lock.ok) return text(`Lock failed:\n${lock.raw}`);
-      const v = verify(resolve(a.repo));
+      const v = verify(repoPath(a.repo));
       const fin = v.pass
         ? cli(["contract", "OutcomePay", "settle", "--job_id", String(a.job_id), "--gas", "10000000000"])
         : cli(["contract", "OutcomePay", "refund", "--job_id", String(a.job_id), "--gas", "10000000000"]);
