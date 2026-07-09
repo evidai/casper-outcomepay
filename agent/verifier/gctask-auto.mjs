@@ -27,11 +27,18 @@
  */
 
 import { execSync } from "node:child_process";
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync, copyFileSync } from "node:fs";
 import { join, resolve, basename } from "node:path";
 
 const target = resolve(process.argv[2] ?? ".");
 const MAKE_BRANCH = process.argv.includes("--branch");
+
+// Intentionally-vulnerable fixtures ship manifests as *.fixture.json (kept out
+// of dependency scanners); materialize them so the target is runnable as-is.
+for (const f of ["package.json", "package-lock.json"]) {
+  const fixture = join(target, f.replace(/\.json$/, ".fixture.json"));
+  if (!existsSync(join(target, f)) && existsSync(fixture)) copyFileSync(fixture, join(target, f));
+}
 
 if (!existsSync(join(target, "package.json"))) {
   console.error(`No package.json in ${target}`);
