@@ -6,3 +6,8 @@ contract/.env
 */verifier/*/gctask-report.json
 */verifier/*/SECURITY-SCAN.md
 */verifier/*/gctask-badge.json
+
+# job-fail fixture manifests are materialized at demo runtime from *.fixture.json
+# (kept out of the tree so dependency scanners don't flag intentional demo vulns)
+agent/verifier/job-fail/package.json
+agent/verifier/job-fail/package-lock.json

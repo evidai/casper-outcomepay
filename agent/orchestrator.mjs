@@ -50,6 +50,13 @@ function txHash(out) {
 function verify(repo) {
   const report = join(repo, "gctask-report.json");
   if (existsSync(report)) rmSync(report);
+  // The intentionally-vulnerable fixture ships its manifests as *.fixture.* so
+  // repo-level dependency scanners don't flag demo baggage as product alerts;
+  // materialize them for the run.
+  for (const f of ["package.json", "package-lock.json"]) {
+    const fixture = join(repo, f.replace(/\.json$/, ".fixture.json"));
+    if (existsSync(fixture)) execFileSync("cp", [fixture, join(repo, f)]);
+  }
   // Repeatability: if a pristine vulnerable seed lockfile exists, restore it so
   // every run starts from the genuinely-vulnerable baseline (and resolves it).
   const seed = join(repo, "package-lock.seed.json");
