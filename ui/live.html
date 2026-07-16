@@ -87,7 +87,9 @@
 </div>
 
 <script type="module">
-import * as sdk from "https://cdn.jsdelivr.net/npm/casper-js-sdk@5.0.12/+esm";
+// jsdelivr の +esm ビルドは named export を持たず default だけを export するため
+// `import * as sdk` だと sdk.HttpHandler 等が undefined になる（default importが正解）
+import sdk from "https://cdn.jsdelivr.net/npm/casper-js-sdk@5.0.12/+esm";
 const { ContractCallBuilder, SessionBuilder, Args, CLValue, CLTypeUInt8, Key, PublicKey,
         RpcClient, HttpHandler } = sdk;
 
@@ -161,9 +163,21 @@ $("connect").onclick = async () => {
 
 async function signAndSend(label, tx) {
   log(`${label}: requesting signature…`);
-  const res = await provider.sign(JSON.stringify(tx.toJSON()), activeKey);
+  // Casper Wallet expects the TransactionV1 wrapped as {"transaction":{"Version1":{...}}} —
+  // tx.toJSON() returns the bare Version1 object, and sending it unwrapped makes the wallet
+  // sign a different digest, so the node then rejects with -32016 "Invalid transaction".
+  const walletJson = JSON.stringify({ transaction: { Version1: tx.toJSON() } });
+  const res = await provider.sign(walletJson, activeKey);
   if (res.cancelled) throw new Error("signature cancelled in wallet");
-  tx.setSignature(res.signature, PublicKey.fromHex(activeKey));
+  // Casper Wallet returns the raw signature bytes (no algorithm tag). The SDK's own
+  // tx.sign(privateKey) path prepends a 1-byte algorithm tag (01=ED25519, 02=SECP256K1)
+  // before calling setSignature — that tag is what setSignature itself does NOT add.
+  // Skipping it made the node reject every submission with "Invalid params" (-32602).
+  const rawSig = res.signature instanceof Uint8Array ? res.signature
+    : hexToBytes(String(res.signatureHex ?? res.signature).replace(/^0x/, ""));
+  const tagByte = activeKey.startsWith("02") ? 0x02 : 0x01;
+  const taggedSig = new Uint8Array([tagByte, ...rawSig]);
+  tx.setSignature(taggedSig, PublicKey.fromHex(activeKey));
   const put = await rpcClient.putTransaction(tx);
   const th = put.transactionHash ?? put.rawJSON?.transaction_hash;
   const hash = th?.toHex?.() ?? th?.transactionV1?.toHex?.() ?? th?.transactionV1 ?? th?.Version1 ?? String(th);
@@ -185,7 +199,7 @@ async function signAndSend(label, tx) {
 
 $("setcap").onclick = async () => {
   try { await signAndSend("set_cap(1 CSPR)", buildSetCap(activeKey, 1_000_000_000)); }
-  catch (e) { log("set_cap: " + e.message, "err"); }
+  catch (e) { log("set_cap: " + e.message + (e.data ? " | data: " + JSON.stringify(e.data) : "") + (e.stack ? "" : ""), "err"); console.error(e); }
 };
 
 $("lock").onclick = async () => {
@@ -196,20 +210,20 @@ $("lock").onclick = async () => {
     const r = await signAndSend(`lock(job ${currentJob}, 0.05 CSPR)`, tx);
     if (r.ok) { $("settle").disabled = false; $("refund").disabled = false;
       log(`escrow locked. now decide the outcome ↓`, "ok"); }
-  } catch (e) { log("lock: " + e.message, "err"); }
+  } catch (e) { log("lock: " + e.message + (e.data ? " | data: " + JSON.stringify(e.data) : "") + (e.stack ? "" : ""), "err"); console.error(e); }
 };
 
 $("settle").onclick = async () => {
   try {
     const r = await signAndSend(`settle(job ${currentJob})`, callJob(activeKey, "settle", currentJob));
     if (r.ok) log(`escrow released to provider — outcome-settled payment complete 🎉`, "ok");
-  } catch (e) { log("settle: " + e.message, "err"); }
+  } catch (e) { log("settle: " + e.message + (e.data ? " | data: " + JSON.stringify(e.data) : "") + (e.stack ? "" : ""), "err"); console.error(e); }
 };
 $("refund").onclick = async () => {
   try {
     const r = await signAndSend(`refund(job ${currentJob})`, callJob(activeKey, "refund", currentJob));
     if (r.ok) log(`escrow refunded to you — green-or-no-fee honored 🍋`, "ok");
-  } catch (e) { log("refund: " + e.message, "err"); }
+  } catch (e) { log("refund: " + e.message + (e.data ? " | data: " + JSON.stringify(e.data) : "") + (e.stack ? "" : ""), "err"); console.error(e); }
 };
 </script>
 </body>
