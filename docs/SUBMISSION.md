@@ -17,6 +17,7 @@ Agentic AI, DeFi, RWA, x402, MCP, Casper
 ## Links
 - GitHub: https://github.com/evidai/casper-outcomepay
 - Live demo: https://evidai.github.io/casper-outcomepay/
+- **Wallet-interactive demo (Casper Wallet, Testnet): https://evidai.github.io/casper-outcomepay/ui/live.html**
 - Demo video: <PASTE YOUR VIDEO URL>
 
 ## Demo Video (required)
@@ -48,6 +49,11 @@ OutcomePay: outcome-settled escrow for autonomous agents on Casper. An agent loc
 **Long-term.** The safety layer every paying agent needs. Backed by LemonCake, a live x402 agent-payment rail; OutcomePay is its on-chain outcome-settlement layer.
 
 ## Test it yourself — step-by-step (no marketing, ~5 minutes)
+
+**A0. Use it yourself with Casper Wallet (~3 minutes, browser only):**
+1. Install [Casper Wallet](https://www.casperwallet.io/), switch to **Testnet**, grab test CSPR from the [faucet](https://testnet.cspr.live/tools/faucet).
+2. Open **https://evidai.github.io/casper-outcomepay/ui/live.html** — connect, set your on-chain budget cap, lock 0.05 CSPR escrow for a job, then settle (pay the provider) or refund (money back). Every step is a real signed transaction with a cspr.live link.
+(Browser RPC goes through a minimal open-source CORS relay — `relay/` in the repo — because public Casper nodes don't send CORS headers. It only forwards allowlisted read/submit RPC methods; your keys never leave Casper Wallet.)
 
 **A. Verify the on-chain proof (30 seconds, nothing to install):**
 1. Open the contract package: https://testnet.cspr.live/contract-package/da6a192c115d4696363e04e87b6ae4ee08c3269e4571fe7cf998befe09eccff1

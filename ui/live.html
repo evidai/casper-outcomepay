@@ -95,7 +95,7 @@ const CHAIN = "casper-test";
 const PACKAGE_HASH = "da6a192c115d4696363e04e87b6ae4ee08c3269e4571fe7cf998befe09eccff1";
 const GAS_CALL = 10_000_000_000, GAS_LOCK = 30_000_000_000;
 // CORS relay (public Casper nodes send no CORS headers). Override: ?relay=https://...
-const RELAY = new URLSearchParams(location.search).get("relay") ?? "https://relay-hybb44r0b-contact-2985s-projects.vercel.app/api/rpc";
+const RELAY = new URLSearchParams(location.search).get("relay") ?? "https://relay-phi-pink.vercel.app/api/rpc";
 
 const $ = (id) => document.getElementById(id);
 const logEl = $("log");
