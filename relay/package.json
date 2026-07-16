@@ -1,0 +1,5 @@
+{
+  "name": "casper-rpc-relay",
+  "private": true,
+  "type": "module"
+}

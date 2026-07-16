@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OutcomePay — Live on Casper Testnet (Casper Wallet)</title>
+<style>
+  :root{ --bg:#08090c; --ink:#f4f5f7; --dim:#9aa0ad; --line:#1c1f27; --accent:#8b7bff;
+         --green:#46d6a0; --amber:#ffc357; --red:#ff7a7a; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.6 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 24px 80px}
+  h1{font-size:28px;letter-spacing:-.02em;margin:0 0 6px}
+  .sub{color:var(--dim);margin:0 0 28px}
+  .card{border:1px solid var(--line);border-radius:14px;background:#0b0d12;padding:20px;margin:14px 0}
+  .card h2{margin:0 0 4px;font-size:16px}
+  .card p{margin:4px 0 12px;color:var(--dim);font-size:13.5px}
+  .btn{border:0;cursor:pointer;font-weight:600;font-size:14px;border-radius:10px;padding:11px 18px;font-family:inherit;background:var(--accent);color:#0a0a12}
+  .btn:disabled{opacity:.35;cursor:default}
+  .btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.green{background:var(--green)} .btn.amber{background:var(--amber)}
+  input{background:#0f1117;border:1px solid var(--line);border-radius:8px;color:var(--ink);
+    padding:9px 12px;font:13px ui-monospace,Menlo,monospace;width:100%;margin:4px 0 10px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-block;font:12px ui-monospace,Menlo,monospace;background:#12141b;border:1px solid var(--line);
+    border-radius:99px;padding:4px 12px;color:var(--dim)}
+  .pill.ok{color:var(--green);border-color:#1d4436}
+  #log{font:12.5px ui-monospace,Menlo,monospace;background:#0f1117;border:1px solid var(--line);
+    border-radius:10px;padding:14px;margin-top:16px;white-space:pre-wrap;word-break:break-all;min-height:80px;max-height:340px;overflow-y:auto}
+  .ok{color:var(--green)} .err{color:var(--red)} .warn{color:var(--amber)}
+  .steps{color:var(--dim);font-size:13px;margin:0 0 4px}
+  code{background:#12141b;border-radius:5px;padding:1px 6px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Try OutcomePay live <span style="color:var(--accent)">on Casper Testnet</span></h1>
+  <p class="sub">Escrow that settles on a verified outcome — drive the real contract from your browser with
+    <a href="https://www.casperwallet.io/" target="_blank" rel="noopener">Casper Wallet</a>.
+    Contract package: <a href="https://testnet.cspr.live/contract-package/da6a192c115d4696363e04e87b6ae4ee08c3269e4571fe7cf998befe09eccff1" target="_blank" rel="noopener"><code>da6a192c…eccff1</code></a>
+    · <a href="./index.html">← overview</a></p>
+
+  <div class="card">
+    <h2>0. Connect</h2>
+    <p>Casper Wallet (browser extension), switched to <b>Testnet</b>, with some test CSPR
+       (<a href="https://testnet.cspr.live/tools/faucet" target="_blank" rel="noopener">faucet</a>). Gas per action: ~2–4 CSPR (test tokens).</p>
+    <div class="row">
+      <button class="btn" id="connect">Connect Casper Wallet</button>
+      <span class="pill" id="acct">not connected</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>1. Set your budget cap — <code>set_cap</code></h2>
+    <p>On-chain spending limit for <i>your</i> account. The contract physically rejects any lock beyond it
+       (that's the CapExceeded revert judges can see on-chain).</p>
+    <div class="row">
+      <button class="btn" id="setcap" disabled>Set cap: 1 CSPR</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Lock escrow for a job — <code>lock</code> <span style="color:var(--dim);font-weight:400">(payable, via Odra proxy)</span></h2>
+    <p>Escrows <b>0.05 CSPR</b> for a job. Provider = the account paid on success (prefilled with the demo provider).</p>
+    <label class="steps">provider account-hash (hex)</label>
+    <input id="provider" value="97112e26ed2106500313bf0406a1cfea0516b7cc5d7f997eb0229922ab1c16ae" spellcheck="false"/>
+    <div class="row">
+      <button class="btn" id="lock" disabled>Lock 0.05 CSPR</button>
+      <span class="pill" id="job">job: –</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Outcome → settle or refund</h2>
+    <p>In production the verdict comes from the machine verifier
+       (<a href="https://github.com/evidai/casper-outcomepay#run-it" target="_blank" rel="noopener">gctask</a>: CVEs cleared + tests green ⇒ PASS).
+       Here <b>you</b> play the verifier for the job you just locked:</p>
+    <div class="row">
+      <button class="btn green" id="settle" disabled>✅ Verified → settle (pay provider)</button>
+      <button class="btn amber" id="refund" disabled>❌ Failed → refund (money back)</button>
+    </div>
+  </div>
+
+  <div id="log">ready.</div>
+</div>
+
+<script type="module">
+import * as sdk from "https://cdn.jsdelivr.net/npm/casper-js-sdk@5.0.12/+esm";
+const { ContractCallBuilder, SessionBuilder, Args, CLValue, CLTypeUInt8, Key, PublicKey,
+        RpcClient, HttpHandler } = sdk;
+
+const CHAIN = "casper-test";
+const PACKAGE_HASH = "da6a192c115d4696363e04e87b6ae4ee08c3269e4571fe7cf998befe09eccff1";
+const GAS_CALL = 10_000_000_000, GAS_LOCK = 30_000_000_000;
+// CORS relay (public Casper nodes send no CORS headers). Override: ?relay=https://...
+const RELAY = new URLSearchParams(location.search).get("relay") ?? "https://relay-hybb44r0b-contact-2985s-projects.vercel.app/api/rpc";
+
+const $ = (id) => document.getElementById(id);
+const logEl = $("log");
+const log = (msg, cls = "") => { logEl.innerHTML += `\n<span class="${cls}">${msg}</span>`; logEl.scrollTop = logEl.scrollHeight; };
+
+let provider, activeKey = null, currentJob = null;
+
+// ---- 構築（Node検証でチェーン上のtxとbyte-identicalを確認済みのコード） ----
+const buildSetCap = (pub, motes) => new ContractCallBuilder()
+  .from(PublicKey.fromHex(pub)).byPackageHash(PACKAGE_HASH).entryPoint("set_cap")
+  .runtimeArgs(Args.fromMap({ amount: CLValue.newCLUInt512(String(motes)) }))
+  .payment(GAS_CALL).chainName(CHAIN).build();
+
+const callJob = (pub, ep, jobId) => new ContractCallBuilder()
+  .from(PublicKey.fromHex(pub)).byPackageHash(PACKAGE_HASH).entryPoint(ep)
+  .runtimeArgs(Args.fromMap({ job_id: CLValue.newCLUint64(BigInt(jobId)) }))
+  .payment(GAS_CALL).chainName(CHAIN).build();
+
+async function buildLock(pub, jobId, providerHex, motes) {
+  const wasm = new Uint8Array(await (await fetch("./proxy_caller_with_return.wasm")).arrayBuffer());
+  const inner = Args.fromMap({
+    job_id: CLValue.newCLUint64(BigInt(jobId)),
+    provider: CLValue.newCLKey(Key.newKey("account-hash-" + providerHex)),
+  });
+  const innerBytes = inner.toBytes();
+  const listU8 = CLValue.newCLList(CLTypeUInt8, Array.from(innerBytes).map((b) => CLValue.newCLUint8(b)));
+  return new SessionBuilder()
+    .from(PublicKey.fromHex(pub)).wasm(wasm).installOrUpgrade()
+    .runtimeArgs(Args.fromMap({
+      package_hash: CLValue.newCLByteArray(hexToBytes(PACKAGE_HASH)),
+      entry_point: CLValue.newCLString("lock"),
+      args: listU8,
+      attached_value: CLValue.newCLUInt512(String(motes)),
+      amount: CLValue.newCLUInt512(String(motes)),
+    }))
+    .payment(GAS_LOCK).chainName(CHAIN).build();
+}
+
+function hexToBytes(hex) {
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+  return out;
+}
+
+// ---- RPC via relay（Node検証と同一のSDKクライアントをrelayに向ける） ----
+const rpcClient = new RpcClient(new HttpHandler(RELAY));
+
+// ---- wallet ----
+$("connect").onclick = async () => {
+  try {
+    const CasperWalletProvider = window.CasperWalletProvider;
+    if (!CasperWalletProvider) { log("Casper Wallet extension not found — install from casperwallet.io", "err"); return; }
+    provider = CasperWalletProvider();
+    const ok = await provider.requestConnection();
+    if (!ok) { log("connection rejected", "err"); return; }
+    activeKey = await provider.getActivePublicKey();
+    $("acct").textContent = activeKey.slice(0, 14) + "…"; $("acct").classList.add("ok");
+    for (const id of ["setcap", "lock"]) $(id).disabled = false;
+    log(`connected: ${activeKey}`, "ok");
+    log(`⚠ make sure the wallet is on TESTNET`, "warn");
+  } catch (e) { log("connect failed: " + e.message, "err"); }
+};
+
+async function signAndSend(label, tx) {
+  log(`${label}: requesting signature…`);
+  const res = await provider.sign(JSON.stringify(tx.toJSON()), activeKey);
+  if (res.cancelled) throw new Error("signature cancelled in wallet");
+  tx.setSignature(res.signature, PublicKey.fromHex(activeKey));
+  const put = await rpcClient.putTransaction(tx);
+  const th = put.transactionHash ?? put.rawJSON?.transaction_hash;
+  const hash = th?.toHex?.() ?? th?.transactionV1?.toHex?.() ?? th?.transactionV1 ?? th?.Version1 ?? String(th);
+  log(`${label}: submitted <a target="_blank" rel="noopener" href="https://testnet.cspr.live/transaction/${hash}">${String(hash).slice(0, 18)}…</a>`);
+  for (let i = 0; i < 40; i++) {
+    await new Promise((r) => setTimeout(r, 6000));
+    try {
+      const info = await rpcClient.getTransactionByTransactionHash(hash);
+      const exec = info?.executionInfo?.executionResult;
+      if (exec) {
+        const err = exec.errorMessage ?? exec.error_message;
+        if (err) { log(`${label}: ❌ reverted — ${err}`, "err"); return { ok: false, hash }; }
+        log(`${label}: ✅ executed (gas ${exec.consumed ?? ""})`, "ok"); return { ok: true, hash };
+      }
+    } catch { /* pending */ }
+  }
+  throw new Error("timeout waiting for execution");
+}
+
+$("setcap").onclick = async () => {
+  try { await signAndSend("set_cap(1 CSPR)", buildSetCap(activeKey, 1_000_000_000)); }
+  catch (e) { log("set_cap: " + e.message, "err"); }
+};
+
+$("lock").onclick = async () => {
+  try {
+    currentJob = Math.floor(Date.now() / 1000);
+    $("job").textContent = "job: " + currentJob;
+    const tx = await buildLock(activeKey, currentJob, $("provider").value.trim(), 50_000_000);
+    const r = await signAndSend(`lock(job ${currentJob}, 0.05 CSPR)`, tx);
+    if (r.ok) { $("settle").disabled = false; $("refund").disabled = false;
+      log(`escrow locked. now decide the outcome ↓`, "ok"); }
+  } catch (e) { log("lock: " + e.message, "err"); }
+};
+
+$("settle").onclick = async () => {
+  try {
+    const r = await signAndSend(`settle(job ${currentJob})`, callJob(activeKey, "settle", currentJob));
+    if (r.ok) log(`escrow released to provider — outcome-settled payment complete 🎉`, "ok");
+  } catch (e) { log("settle: " + e.message, "err"); }
+};
+$("refund").onclick = async () => {
+  try {
+    const r = await signAndSend(`refund(job ${currentJob})`, callJob(activeKey, "refund", currentJob));
+    if (r.ok) log(`escrow refunded to you — green-or-no-fee honored 🍋`, "ok");
+  } catch (e) { log("refund: " + e.message, "err"); }
+};
+</script>
+</body>
+</html>
